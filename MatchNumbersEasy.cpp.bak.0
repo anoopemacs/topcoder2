@@ -1,0 +1,73 @@
+#include <cstdio>
+#include <string>
+#include <cctype>
+#include <ios>
+#include <iostream>
+#include <numeric>
+#include <vector>
+#include <list>
+#include <cmath>
+#include <algorithm>
+#include <cstdlib> // malloc
+#include <climits>
+#include <utility> // pair
+
+#include <cstring>
+#include <ctime>
+#include <set>
+#include <sstream>
+#include <typeinfo>
+#include <fstream>
+#include <iomanip>
+
+using namespace std;
+
+#define debug(x) cout << #x << ": " << x << endl
+
+class MatchNumbersEasy {
+public:
+    string maxNumber(vector<int> matches, int n) {
+	cout << endl;
+	string ret;
+	
+	return ret;
+    }
+};
+
+// CUT begin
+//------------------------------------------------------------------------------
+const double CASE_TIME_OUT = 2.0;
+
+bool disabledTest(int x)
+{
+    return x < 0;
+}
+template<class I, class O> vector<pair<I,O>> getTestCases() { return {
+	{ { {6,7,8}, 21 }, {"210"} },
+	{ { {5,23,24}, 30 }, {"20"} },
+	{ { {1,5,3,2}, 1 }, {"0"} },
+	{ { {1,1,1,1,1,1,1,1,1,1}, 50 }, {"99999999999999999999999999999999999999999999999999"} },
+	// Your custom test goes here:
+	//{ { {}, }, {} },
+    };}
+
+//------------------------------------------------------------------------------
+// Tester code:
+//#define DISABLE_THREADS
+#include "tester.cpp"
+struct input {
+    vector<int> p0;int p1;
+
+    string run(MatchNumbersEasy* x) {
+	return x->maxNumber(p0,p1);
+    }
+    void print() { Tester::printArgs(p0,p1); }
+};
+    
+int main() {
+    return Tester::runTests<MatchNumbersEasy>(
+					      getTestCases<input, Tester::output<string>>(), disabledTest, 
+					      500, 1484475769, CASE_TIME_OUT, Tester::COMPACT_REPORT
+					      );
+}
+// CUT end

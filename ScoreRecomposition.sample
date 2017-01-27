@@ -1,0 +1,35 @@
+-- Example 0
+CCC
+5
+
+-1
+-- Example 1
+WCWW
+4
+
+2
+-- Example 2
+CWW
+1
+
+0
+-- Example 3
+CWCC
+6
+
+2
+-- Example 4
+WWCC
+3
+
+2
+-- Example 5
+CWCCWWCWCC
+55
+
+-1
+-- Example 6
+CWWCWCCWWC
+37
+
+3

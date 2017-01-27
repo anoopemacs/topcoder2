@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>TopCoder SRM 302 - 500: XBallGame</title>
+    
+    <link type="image/x-icon" rel="shortcut icon" href="http://www.topcoder.com/i/favicon.ico"/>
+    
+
+    
+    <style type="text/css">
+        /* font */
+body {
+    font-family: Helvetica, Arial, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.2em;
+}
+ul.constraints > li:before, ul.notes > li:before {
+    font-family: monospace;
+    font-weight: normal;
+}
+.heading {
+    font-weight: bold;
+    font-size: 175%;
+    line-height: 1.2em;
+}
+.section .section-title {
+    font-weight: bold;
+    font-size: 125%;
+}
+ol.testcases > li:before {
+    font-family: monospace;
+}
+type {
+    font-weight: bold;
+    font-family: monospace;
+}
+li.testcase .data {
+    font-family: monospace;
+    line-height: 1.5em;
+}
+
+/* layout */
+.heading {
+    margin-top: 0.1em;
+    margin-bottom:0.1em;
+    text-align: center;
+}
+.section .section-title {
+    margin-top : 1em;
+    margin-bottom: 1em;
+}
+.problem-intro, note, user-constraint {
+    padding-left: 1.25em;
+}
+
+/* Lists */
+ul.constraints, ul.notes, ul.variables, ul.problem-definition-lines {
+    list-style-type: none;
+    padding: 0px;
+}
+ul.constraints > li:before {
+    content: "-";
+    position:relative;
+    margin-left: 0px; /* optional, for multiline li element */
+    left: 0.625em;
+}
+ul.notes > li:before {
+    content: "-";
+    position:relative;
+    margin-left: 0px; /* optional, for multiline li element */
+    left: 0.625em;
+}
+
+/* Testcases */
+li.testcase {
+    line-height: 1.1em;
+    padding-top: 0.625em;
+    padding-bottom: 0.625em;
+    overflow: auto;
+}
+li.testcase > .testcase-content > div { padding-bottom: 0.5em; padding-left: 1em; }
+
+li.testcase .testcase-comment {
+    margin: 0;
+    padding-left: 1em;
+}
+.testcase-comment p:first-child { margin-top: 0; }
+.testcase-comment p:last-child { margin-bottom: 0; }
+
+li.testcase .testcase-content {
+    margin: 0.31em;
+}
+
+/* Data and variables */
+.testcase-output {
+    padding: 0.2em 1em 0.2em 0em;
+}
+.variables, .testcase-output {
+    margin-left: 0.5em;
+    display: table;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.variable {
+    display: table-row;
+}
+.variable .name {
+    padding: 0.2em 0em 0.2em 1em;
+    font-weight: bold;
+    display: table-cell;
+    text-align: right;
+}
+.testcase-output .prefix {
+    padding: 0.2em 0em 0.2em 1em;
+    display: table-cell;
+}
+.testcase-output .prefix:after {
+    content : ":";
+    padding-right: 0.5em;
+}
+.variable .name:after {
+    font-weight: bold;
+    content : ":";
+    padding-right: 0.5em;
+}
+.variable .value, .testcase-output .value {
+    padding: 0.2em 1em 0.2em 0em;
+    display: table-cell;
+}
+ol.testcases {
+    padding: 0px;
+    counter-reset: test_number -1;
+}
+ol.testcases > li {
+    list-style:none;
+}
+ol.testcases > li:before {
+    counter-increment:test_number;
+    display: block;
+    clear: both;
+    content:counter(test_number) ")";
+    color: inherit;
+    background: inherit;
+}
+
+/* Problem Definition */
+.problem-definition, .problem-limits {
+    padding-left: 1.25em;
+}
+.problem-definition-lines, .limit-lines {
+    display: table;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 0px;
+}
+.definition-line, .limit-line {
+    display: table-row;
+    height: 1.5em;
+    overflow: auto;
+}
+.limit-name:after {
+    content: ":";
+    margin-right: 1em;
+}
+.definition-name, .definition-value, .limit-name, .limit-value {
+    display: table-cell;
+}
+.definition-value {
+    padding-left: 0.5em;
+}
+.definition-name:after {
+    content: ":";
+}
+#contest-division:before {
+    content: "Div ";
+}
+#problem-score:before {
+    content: "- Problem ";
+}
+#problem-name {
+    display: block;
+}
+
+/* Tags, hidden default */
+.tag {
+    visibility: hidden;
+    position: absolute;
+}
+
+        body {
+    /* font color */
+    color: #333333;
+    /* background color */
+    background-color: white;
+}
+.section .section-title {
+    /* title color */
+    color: black;
+}
+li.testcase .data {
+    /* highlight color */
+    background: #eee;
+}
+
+    </style>
+    
+    
+    
+
+</head>
+
+<body>
+    <h1 class="heading">
+        <span id='contest-name'>SRM 302</span>
+        <span id='contest-division'>2</span>
+        <span id='problem-score'>500</span>
+        <span id='problem-name'>XBallGame</span>
+    </h1>
+
+    <hr />
+
+    <!-- Problem Statement -->
+    <div class="section">
+        <h2 class="section-title">Problem Statement</h2>
+        <div class="problem-intro">
+            <intro><p>Fans of the game X-ball frequently use the official players' stats.  These stats are presented as a list of players' names and the positions they can play.  If a player can play at several positions, he is shown in the list once for each position.</p>
+
+<p>The fans want to get the statistics in a new format.  In the old format, each element of the list contained a single player and a single position played by that player.  In the new format, each element of the list will contain a single player and all the positions that the player can play.  The new list must contain the same number of elements as the old one, and players must appear in the same order as before.  Each element of the new list must contain the name of the player, a '-' character, and a comma-separated list of all the positions the player can play.  The first position must be the same position that was in the corresponding element of the old list, and the other positions must be sorted in alphabetical order.
+</p>
+<pre>
+<b>Old format stats:</b>  |  <b>New format stats:</b>
+John-DH            |  John-DH,RP,SP         
+Jack-SP            |  Jack-SP               
+Sam-OF             |  Sam-OF                
+John-SP            |  John-SP,DH,RP         
+John-RP	           |  John-RP,DH,SP         
+</pre>
+<p>
+You will be given a <type>String[]</type> <b>placeboard</b> containing the statistics in the old format.  Each element will contain a player's name and an abbreviation of the player's position in the form &quot;Name-Position&quot; (quotes for clarity).  Return the list after converting it to the new format.
+</p>
+
+</intro>
+        </div>
+    </div>
+    
+    <!-- Problem definition -->
+    
+    <div class="section" id="definition">
+        <h2 class="section-title">Definition</h2>
+        <div class="problem-definition">
+            <ul class="problem-definition-lines">
+                <li class="definition-line" id='class-line'>
+                    <span class='definition-name'>Class</span>
+                    <span class='definition-value'>XBallGame</span>
+                </li>
+                <li class="definition-line" id='method-line'>
+                    <span class='definition-name'>Method</span>
+                    <span class='definition-value'>newStatistics</span>
+                </li>
+                <li class="definition-line" id='parameters-line'>
+                    <span class='definition-name'>Parameters</span>
+                    <span class='definition-value'>
+                    
+                        vector&lt;string&gt;
+                    
+                    </span>
+                </li>
+                <li class="definition-line" id='returns-line'>
+                    <span class='definition-name'>Returns</span>
+                    <span class='definition-value'>
+                        vector&lt;string&gt;
+                    </span>
+                </li>
+                <li class="definition-line" id='signature-line'>
+                    <span class='definition-name'>Method signature</span>
+                    <span class='definition-value'>
+                        vector&lt;string&gt; newStatistics(vector&lt;string&gt; placeboard)
+                    </span>
+                </li>
+            </ul>
+            <div class="problem-definition-public-tip">(be sure your method is public)</div>
+        </div>        
+    </div>
+    
+
+    <!-- Limits -->
+    <div class="section">
+        <h2 class="section-title">Limits</h2>
+        <div class='problem-limits'>
+            <ul class="limit-lines">
+                <li class='limit-line'>
+                    <span class='limit-name'>Time limit (s)</span>
+                    <span class='limit-value'>2.000</span>
+                </li>
+                <li class='limit-line'>
+                    <span class='limit-name'>Memory limit (MB)</span>
+                    <span class='limit-value'>64</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    
+    <!-- Notes -->
+    <div class="section">
+        <h2 class="section-title">Notes</h2>
+        <ul class="notes">
+        
+            <li><note>Note that the names of the players are case-sensitive.</note></li>
+        
+        </ul>
+    </div>
+    
+    
+    <!-- Constraints -->
+    <div class="section">
+        <h2 class="section-title">Constraints</h2>
+        <ul class="constraints">
+        
+            <li><user-constraint><b>placeboard</b> will contain between 1 and 50 elements, inclusive. </user-constraint></li>
+        
+            <li><user-constraint>Each element of <b>placeboard</b> will contain between 4 and 23 characters, inclusive. </user-constraint></li>
+        
+            <li><user-constraint>Each element of <b>placeboard</b> will be in the format &quot;Name-Position&quot; without any leading or trailing spaces.</user-constraint></li>
+        
+            <li><user-constraint>Position will consist of two upper-case letters ('A'-'Z'). </user-constraint></li>
+        
+            <li><user-constraint>Name will contain between 1 and 20 letters ('A'-'Z', 'a'-'z'), inclusive. </user-constraint></li>
+        
+            <li><user-constraint>All elements of <b>placeboard</b> will be distinct.</user-constraint></li>
+        
+        </ul>
+    </div>
+
+    <!-- Test cases -->
+    <div class="section">
+        <h2 class="section-title">Test cases</h2>
+        <ol class="testcases" start='0'>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">placeboard</span>
+                                <span class="value data">
+                                
+                                    { &quot;John-DH&quot;, &quot;Jack-SP&quot;, &quot;Sam-OF&quot;, &quot;John-SP&quot;, &quot;John-RP&quot; }
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            { &quot;John-DH,RP,SP&quot;, &quot;Jack-SP&quot;, &quot;Sam-OF&quot;, &quot;John-SP,DH,RP&quot;, &quot;John-RP,DH,SP&quot; }
+                        
+                        </span>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">placeboard</span>
+                                <span class="value data">
+                                
+                                    { &quot;John-DH&quot;, &quot;Jack-SP&quot;, &quot;Sam-OF&quot;, &quot;John-SP&quot;, &quot;John-RP&quot;, &quot;John-RA&quot;, &quot;John-RZ&quot;, &quot;Jack-OF&quot;, &quot;Sam-SP&quot; }
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            { &quot;John-DH,RA,RP,RZ,SP&quot;, &quot;Jack-SP,OF&quot;, &quot;Sam-OF,SP&quot;, &quot;John-SP,DH,RA,RP,RZ&quot;, &quot;John-RP,DH,RA,RZ,SP&quot;, &quot;John-RA,DH,RP,RZ,SP&quot;, &quot;John-RZ,DH,RA,RP,SP&quot;, &quot;Jack-OF,SP&quot;, &quot;Sam-SP,OF&quot; }
+                        
+                        </span>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">placeboard</span>
+                                <span class="value data">
+                                
+                                    {&quot;PFwL-GE&quot;,<br />&nbsp;&quot;PFwL-EV&quot;,<br />&nbsp;&quot;agXL-SR&quot;,<br />&nbsp;&quot;PFwL-CS&quot;,<br />&nbsp;&quot;PFwL-FE&quot;,<br />&nbsp;&quot;PFwL-MS&quot;,<br />&nbsp;&quot;agXL-VS&quot;,<br />&nbsp;&quot;agXL-AL&quot;,<br />&nbsp;&quot;PFwL-BI&quot;,<br />&nbsp;&quot;PFwL-DK&quot;,<br />&nbsp;&quot;PFwL-MW&quot;,<br />&nbsp;&quot;PFwL-DS&quot;,<br />&nbsp;&quot;agXL-XJ&quot;,<br />&nbsp;&quot;agXL-PJ&quot;,<br />&nbsp;&quot;agXL-CK&quot;,<br />&nbsp;&quot;PFwL-KI&quot;,<br />&nbsp;&quot;agXL-KP&quot;,<br />&nbsp;&quot;agXL-EL&quot;,<br />&nbsp;&quot;PFwL-EA&quot;}
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            { &quot;PFwL-GE,BI,CS,DK,DS,EA,EV,FE,KI,MS,MW&quot;, &quot;PFwL-EV,BI,CS,DK,DS,EA,FE,GE,KI,MS,MW&quot;, &quot;agXL-SR,AL,CK,EL,KP,PJ,VS,XJ&quot;, &quot;PFwL-CS,BI,DK,DS,EA,EV,FE,GE,KI,MS,MW&quot;, &quot;PFwL-FE,BI,CS,DK,DS,EA,EV,GE,KI,MS,MW&quot;, &quot;PFwL-MS,BI,CS,DK,DS,EA,EV,FE,GE,KI,MW&quot;, &quot;agXL-VS,AL,CK,EL,KP,PJ,SR,XJ&quot;, &quot;agXL-AL,CK,EL,KP,PJ,SR,VS,XJ&quot;, &quot;PFwL-BI,CS,DK,DS,EA,EV,FE,GE,KI,MS,MW&quot;, &quot;PFwL-DK,BI,CS,DS,EA,EV,FE,GE,KI,MS,MW&quot;, &quot;PFwL-MW,BI,CS,DK,DS,EA,EV,FE,GE,KI,MS&quot;, &quot;PFwL-DS,BI,CS,DK,EA,EV,FE,GE,KI,MS,MW&quot;, &quot;agXL-XJ,AL,CK,EL,KP,PJ,SR,VS&quot;, &quot;agXL-PJ,AL,CK,EL,KP,SR,VS,XJ&quot;, &quot;agXL-CK,AL,EL,KP,PJ,SR,VS,XJ&quot;, &quot;PFwL-KI,BI,CS,DK,DS,EA,EV,FE,GE,MS,MW&quot;, &quot;agXL-KP,AL,CK,EL,PJ,SR,VS,XJ&quot;, &quot;agXL-EL,AL,CK,KP,PJ,SR,VS,XJ&quot;, &quot;PFwL-EA,BI,CS,DK,DS,EV,FE,GE,KI,MS,MW&quot; }
+                        
+                        </span>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+            <li class="testcase">
+                <div class="testcase-content">
+                    <div class="testcase-input">
+                        <div class='tag'>input</div>
+                        <ul class="variables">
+                        
+                            <li class="variable data">
+                                <span class="name data">placeboard</span>
+                                <span class="value data">
+                                
+                                    {&quot;a-AA&quot;,<br />&nbsp;&quot;a-ZZ&quot;}
+                                
+                                </span>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                    <div class="testcase-output">
+                        <div class='tag'>output</div>
+                        <span class="prefix data">Returns</span>
+                        <span class="value data">
+                        
+                            {&quot;a-AA,ZZ&quot;,<br />&nbsp;&quot;a-ZZ,AA&quot;}
+                        
+                        </span>
+                    </div>
+                    
+               
+                </div>
+            </li>
+            
+        </ol>
+    </div>
+    <hr />
+
+    This problem statement is the exclusive and proprietary property of TopCoder, Inc. Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited. (c)2003, TopCoder, Inc. All rights reserved.
+</body>
+</html>
