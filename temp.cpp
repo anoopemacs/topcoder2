@@ -47,8 +47,64 @@ vector<string> mysplit(string s, char c) {
     return ret;
 }
 
+int maximalSum(vector<int> data) {
+    vector<int> p, n, special;
+    for (int I=0; I<data.size(); ++I) {
+        int dI = data[I];
+        if(dI>1) p.push_back(dI);
+        else if(dI<-1) n.push_back(dI);
+        else special.push_back(dI);
+    }
+    sort(p.begin(), p.end());
+    sort(n.begin(), n.end());
+    debug(n, p, special);
+        
+    int ret = 0;
+
+    int i = p.size() - 1;
+    while (i>0) {
+        ret = ret + p[i]*p[i-1];
+        i = i-2;
+    }
+    if (i == 0) special.push_back(p[i]);
+        
+    int j = n.size() - 1;
+    while (j>0) {
+        ret = ret + n[j]*n[j-1];
+        j = j-2;
+    }
+    if (j == 0) special.push_back(n[j]);
+
+    sort(special.begin(), special.end());   
+        
+    debug(n, p, special);
+        
+    int k = 1;
+    while ((k < special.size()) && (special[k] < 0)) {
+        ret = ret + special[k] * special[k-1];
+        k = k+2;
+    }
+        
+    if(special[k]==0) {
+        ++k;
+    } else {
+        --k;
+    }
+        
+    while (k<special.size()) {
+        ret = ret + special[k];
+        ++k;
+    }
+        
+    return ret;
+}
+
 int main() {
-    bitset<32> bset1;
-    cout << bset1 << endl;
+    long n = 2e9;
+    long ret=1;
+    for(long i=n; i>0; --i)
+	ret = ret*i;
+    cout << ret << endl;
+    
     return 0;
 }

@@ -22,6 +22,8 @@ int ans=INT_MAX;
 
 class CarolsSinging {
 public:
+    // I have also done this using bits method, check file CarolsSinging_bits_method.cpp
+    /*
     int myprocess(string s) {
 	int p=0;
 	int didsing[30];
@@ -74,6 +76,48 @@ public:
 	
 	return myaux(0, base.substr(0, Ns));
     }
+    */
+    bool worksp(bitset<16> person, bitset<16> subset) {
+        return ((person & subset) != 0);
+    }
+    
+    vector<bitset<16>> mytransform(vector<string> lyrics) {
+        vector<bitset<16>> ret;
+        for(int i=0; i<lyrics.size(); ++i) {
+            string li = lyrics[i];
+            replace(li.begin(), li.end(), 'Y', '1');
+            replace(li.begin(), li.end(), 'N', '0');
+            //cout << li << endl;
+            ret.push_back(bitset<16>(string(li)));
+        }
+        return ret;
+    }
+    
+    int choose(vector<string> lyrics) {
+        Np=lyrics.size(); //num of persons
+        Ns=lyrics[0].length(); //num of songs
+
+        vector<bitset<16>> ly = mytransform(lyrics);
+        //debug(ly);
+        
+        int all0 = (1<<Ns) - 1;
+	int ret = bitset<16>(all0).count();
+	
+        for (int i=1; i<=all0; ++i) {
+            bitset<16> subset = bitset<16>(i);
+            bool works_for_all = true;
+            for(int i=0; i<Np; ++i) {
+                bitset<16> person = ly[i];
+                if(!(worksp(person, subset)))
+                    works_for_all = false;
+            }
+
+            if(works_for_all && (subset.count() < ret)) {
+		ret = subset.count();
+	    }
+        }   
+        return ret;
+    }
 };
 
 // CUT begin
@@ -90,6 +134,8 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
 	{ { {"YNN","YNY","YNY","NYY","NYY","NYN"} }, {2} },
 	{ { {"YNNYYY","YYNYYY","YNNYYN","NYYNNN","YYYNNN","YYYNNY","NYYYYY","NYNYYY","NNNNYY","YYYYYY","YNNNNN","YYYYNY","YYNNNN","NNYYYN","NNNNYY","YYYNNN","NYNNYN","YNNYYN","YYNNNY","NYYNNY","NNYYYN","YNYYYN","NNNYNY","YYYYNN","YYNYNN","NYYNYY","YYNYYN"} }, {4} },
 	{ {{"YNNYNNNNNN", "NNNNNYNYNN", "NNNNYNNNYN", "NNYNNNYNNN", "NNNNNYNNNY", "NNYNNNNNNY", "NNNNNNNYYN", "NNYNNNNNYN", "NNNNNNNNYY", "NNNYNNNYNN", "YNNNNNNNNN", "NNYNNNNNNY", "NNNYNNNNNY", "NNNYYNNNNN", "NNNNNNYNNY", "YNYNNNNNNN", "NYNNYNNNNN", "NNNNNYNNNY", "NNNNNNNNYY", "YNNNNNNNYN", "NNNNNYYNNN"}}, {6}},
+        { {{"NYNNNYNYY", "YNNYNNYNY", "YNYYNYNNN", "YYNNYYYNY", "NNYYYNYYY", "YNNYNNNYY", "YYNNYNYNN", "NYYYNNYYY", "NYYNYNYNY"}}, {2} },
+
 	// Your custom test goes here:
 	//{ { {}}, {} },
     };}
