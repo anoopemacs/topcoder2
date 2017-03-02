@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #define debug(args...) // Just strip off all debug tokens
 using namespace std;
+typedef long long int64;
 
 // CUT begin
 #undef debug
@@ -12,34 +13,13 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
-
-class HandsShaking {
-public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
-
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
-	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
-	}
-	return dp[n];
+class LameKnight {
+ public:
+    int maxCells(int h, int w) {
+	if(h==1) return 1;
+	if(h==2) return min((w+1)/2, 4);
+	if(h>=3 && w<=6) return min(w, 4);
+	return w-2;
     }
 };
 
@@ -52,11 +32,13 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { 100, 50 }, {48} },
+    { { 1, 1 }, {1} },
+    { { 17, 5 }, {4} },
+    { { 2, 4 }, {2} },
+    { { 20, 4 }, {4} },
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { , }, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +46,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        int p0;int p1;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        int run(LameKnight* x) {
+            return x->maxCells(p0,p1);
         }
-        void print() { Tester::printArgs(p0); }
+        void print() { Tester::printArgs(p0,p1); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<LameKnight>(
+            getTestCases<input, Tester::output<int>>(), disabledTest, 
+            500, 1488034762, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

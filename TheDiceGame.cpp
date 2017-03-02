@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #define debug(args...) // Just strip off all debug tokens
 using namespace std;
+typedef long long int64;
 
 // CUT begin
 #undef debug
@@ -12,35 +13,25 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
+double mem[1000006];
 
-class HandsShaking {
-public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
+class TheDiceGame {
+ public:
+    double expectedThrows(int candies) {
+	memset(mem, 0, sizeof(mem));    
 
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
+	mem[0] = 0.0;
+	mem[1] = 1.0;
 	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
+	for(int c=2; c<=candies; ++c) {
+	    double ret = 1.0 + (1/6.0*mem[max(c-1, 0)]) + (1/6.0*mem[max(c-2, 0)]) + (1/6.0*mem[max(c-3, 0)])
+		+ (1/6.0*mem[max(c-4, 0)]) + (1/6.0*mem[max(c-5, 0)]) + (1/6.0*mem[max(c-6, 0)]);
+	    mem[c] = ret;
 	}
-	return dp[n];
+	
+	return mem[candies];
     }
+    
 };
 
 // CUT begin
@@ -52,9 +43,11 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { 1 }, {1.0} },
+    { { 2 }, {1.1666666666666667} },
+    { { 7 }, {2.5216263717421126} },
+    { { 47 }, {13.90476189046144} },
+    //{ { 757158}, {} },
     // Your custom test goes here:
     //{ { }, {} },
 };}
@@ -66,16 +59,16 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     struct input {
         int p0;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        double run(TheDiceGame* x) {
+            return x->expectedThrows(p0);
         }
         void print() { Tester::printArgs(p0); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<TheDiceGame>(
+            getTestCases<input, Tester::output<double>>(), disabledTest, 
+            500, 1488047809, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

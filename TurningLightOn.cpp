@@ -12,34 +12,38 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
-
-class HandsShaking {
+class TurningLightOn {
 public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
+    char toggle(char c) {
+	if(c=='0') return '1';
+	else return '0';
     }
-
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
-	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
+    
+    void flip(vector<string>& board, int R, int C) {
+	//params are 0-based
+	for(int r=0; r<=R; ++r) {
+	    for(int c=0; c<=C; ++c) {
+		board[r][c] = toggle(board[r][c]);
+	    }
 	}
-	return dp[n];
+    }
+    
+    int minFlips(vector<string> board) {
+	int R = board.size();
+	int C = board[0].length();
+	int ret = 0;
+	
+	for(int r=R-1; r>=0; --r) {
+	    for(int c=C-1; c>=0; --c) {
+		if(board[r][c] == '0') {
+		    flip(board, r, c);
+		    ++ret;
+		}
+		
+	    }
+	}
+	debug(board);
+	return ret;
     }
 };
 
@@ -52,11 +56,12 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { {"0001111","0001111","1111111"} }, {1} },
+    { { {"1111111","1111111","1111111"} }, {0} },
+    { { {"01001"} }, {3} },
+    { { {"0101","1010","0101","1010"} }, {7} },
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { {}}, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +69,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        vector<string> p0;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        int run(TurningLightOn* x) {
+            return x->minFlips(p0);
         }
         void print() { Tester::printArgs(p0); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<TurningLightOn>(
+            getTestCases<input, Tester::output<int>>(), disabledTest, 
+            500, 1487720952, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

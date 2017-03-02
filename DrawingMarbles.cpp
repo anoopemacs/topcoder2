@@ -12,34 +12,33 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
+int myop(int a, int b) {
+    return max(a, b);
+}
 
-class HandsShaking {
+class DrawingMarbles {
 public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
+    double sameColor(vector<int> colors, int n) {
+	int N = colors.size();
+	int L = accumulate(colors.begin(), colors.end(), INT_MIN, myop);
+	debug(L);
+	if(n>L) return 0;
 
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
+	double sum = accumulate(colors.begin(), colors.end(), 0.0);
+	double ret = 0;
 	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
+	for(int i=0; i<N; ++i) {
+	    if(n<=colors[i]) {
+		double probi = 1;
+		
+		for(int j=0; j<n; ++j) {
+		    probi *= (colors[i]-j)/(sum-j);
+                }
+		
+		ret = ret + probi;
+	    }
 	}
-	return dp[n];
+	return ret;
     }
 };
 
@@ -52,11 +51,16 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { {13}, 8 }, {1.0} },
+    { { {5,7}, 1 }, {1.0} },
+    { { {5,6,7}, 2 }, {0.3006535947712418} },
+    { { {12,2,34,13,17}, 4 }, {0.035028830818304504} },
+
+    { {{16, 10, 11, 20, 6, 12, 17, 2, 15, 15, 17, 8, 14, 19, 1, 1, 4, 5, 13, 9, 14, 2, 17, 4, 3, 20, 4, 11, 13, 19, 2, 8, 20, 5, 20, 6, 16, 16, 19, 2, 10, 15, 9, 4, 14, 1, 16, 9, 17, 8}, 3}, {6.451180614601044E-4}},
+    
+
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { {}, }, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +68,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        vector<int> p0;int p1;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        double run(DrawingMarbles* x) {
+            return x->sameColor(p0,p1);
         }
-        void print() { Tester::printArgs(p0); }
+        void print() { Tester::printArgs(p0,p1); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<DrawingMarbles>(
+            getTestCases<input, Tester::output<double>>(), disabledTest, 
+            500, 1487722337, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

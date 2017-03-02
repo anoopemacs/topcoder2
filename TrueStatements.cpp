@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #define debug(args...) // Just strip off all debug tokens
 using namespace std;
+typedef long long int64;
 
 // CUT begin
 #undef debug
@@ -12,34 +13,22 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
-
-class HandsShaking {
-public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
-
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
+class TrueStatements {
+ public:
+    int numberTrue(vector<int> vi) {
+	int ret = -1;
 	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
+	int N = vi.size();
+	for(int n=0; n<=N; ++n) {
+	    string store = string(N, 'x');
+	    for(int i=0; i<N; ++i) {
+		if(vi[i]==n) store[i] = 'T';
+		else store[i] = 'F';
+	    }
+	    if(count(store.begin(), store.end(), 'T') == n) ret = max(ret, n);
 	}
-	return dp[n];
+	
+	return ret;
     }
 };
 
@@ -52,11 +41,12 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { {0,1,2,3} }, {1} },
+    { { {0} }, {-1} },
+    { { {0,3,1,3,2,3} }, {3} },
+    { { {1,1} }, {0} },
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { {}}, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +54,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        vector<int> p0;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        int run(TrueStatements* x) {
+            return x->numberTrue(p0);
         }
         void print() { Tester::printArgs(p0); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<TrueStatements>(
+            getTestCases<input, Tester::output<int>>(), disabledTest, 
+            500, 1488010356, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

@@ -12,34 +12,34 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
+int dp[50][1001];
 
-class HandsShaking {
+class ChangingSounds {
 public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
+    int maxFinal(vector<int> cis, int B, int M) {
+	int N = cis.size();
+	for(int b=0; b<=1000; ++b) {
+	    int u = b+cis[N-1];
+	    int l = b-cis[N-1];
+	    if(u<=M) dp[N-1][b] = u;
+	    else if (l>=0) dp[N-1][b] = l;
+	    else dp[N-1][b] = -1;
 	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
-
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
 	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
-	}
-	return dp[n];
+	for(int i=N-2; i>=0; --i) {
+	    for(int b=0; b<=1000; ++b) {
+                int u = b+cis[i];
+                int l = b-cis[i];
+		int topush = -1;
+                
+		if(u<=M) topush = max(topush, dp[i+1][u]);
+		if (l>=0) topush = max(topush, dp[i+1][l]);
+		
+		dp[i][b] = topush;
+            }    
+        }
+	
+	return dp[0][B];
     }
 };
 
@@ -52,11 +52,11 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { {5,3,7}, 5, 10 }, {10} },
+    { { {15,2,9,10}, 8, 20 }, {-1} },
+    { { {74,39,127,95,63,140,99,96,154,18,137,162,14,88}, 40, 243 }, {238} },
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { {}, , }, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +64,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        vector<int> p0;int p1;int p2;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        int run(ChangingSounds* x) {
+            return x->maxFinal(p0,p1,p2);
         }
-        void print() { Tester::printArgs(p0); }
+        void print() { Tester::printArgs(p0,p1,p2); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<ChangingSounds>(
+            getTestCases<input, Tester::output<int>>(), disabledTest, 
+            500, 1487708009, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

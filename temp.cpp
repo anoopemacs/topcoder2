@@ -99,12 +99,137 @@ int maximalSum(vector<int> data) {
     return ret;
 }
 
+
+int myval(string s) {
+    int N = s.size();
+    sort(s.begin(), s.end());
+    string::iterator iter = unique(s.begin(), s.end());
+    return N * (int) (iter - s.begin());
+}
+    
+int myval(vector<string> vs) {
+    int ret = 0;
+    for(int i=0; i<vs.size(); ++i) {
+        ret += myval(vs[i]);
+    }
+    return ret;
+}
+    
+
+int dx[8] = {2, 2, -2, -2, 1, 1, -1, -1};
+int dy[8] = {-1, 1, 1, -1, 2, -2, 2, -2};
+
+bool valid(int x, int y, int N, int M) {
+    if(x <= 0 || y <= 0 || x > N || y > M)
+        return false;
+    return true;
+}
+
+int bfs(pair<int, int> p1, pair<int, int> p2, pair<int, int> p3) {
+
+    int N = p3.first;
+    int M = p3.second;
+    queue<pair<pair<int, int>, int> > Que;
+    map<pair<int, int>, bool> Vis;
+
+    Que.push(make_pair(p1, 0));
+
+    while(!Que.empty()) {
+
+        pair<pair<int, int>, int> temp = Que.front();
+        Que.pop();
+
+        if(temp.first.first == p2.first && temp.first.second == p2.second)
+            return temp.second;
+        int x = temp.first.first;
+        int y = temp.first.second;
+        int dis = temp.second + 1;
+
+
+        if(Vis.count(make_pair(x, y)))
+            continue;
+        Vis[make_pair(x, y)] = true;
+
+        for(int i = 0; i < 8; ++i) {
+        
+            int x1 = x + dx[i];
+            int y1 = y + dy[i];
+            if(valid(x1, y1, N, M))
+                Que.push(make_pair(make_pair(x1, y1), dis));
+        }
+        
+    }
+        
+    return -1;
+}
+        
+int solve(int N, int M, int x1, int y1, int x2, int y2) {
+        
+    pair<int, int> p1;
+    p1.first = x1;
+    p1.second = y1;
+        
+    pair<int, int> p2;
+    p2.first = x2;
+    p2.second = y2;
+        
+    pair<int, int> p3;
+    p3.first = N;
+    p3.second = M;
+        
+    int ans = bfs(p1, p2, p3);
+    return ans;
+}
+
+    
+int knight_dist(int x1, int y1, int x2, int y2, int Nr, int Nc) {
+        
+    queue<int> Q;
+    Q.push(x1);
+    Q.push(y1);
+    Q.push(0);
+        
+    int solved[10][10];
+    memset(solved, 0, sizeof(solved));
+        
+    while(!Q.empty()) {
+	int xq = Q.front(); Q.pop();
+	int yq = Q.front(); Q.pop();
+	int distq = Q.front(); Q.pop();
+	
+	//cout << endl;   
+	//debug("x1,y1,distq", xq,yq,distq);
+	
+	if(xq==x2 && yq==y2)
+	    return distq;
+	solved[xq][yq] = 1;     
+    
+        for(int i=0; i<8; ++i) {
+	    int x3 = xq+dx[i];
+	    int y3 = yq+dy[i];
+	    
+	    if(x3>=0 && x3<Nr && y3>=0 && y3<Nc && solved[x3][y3] == 0) {
+	        //debug(x3,y3,"*******", "i=", i, "d[]", dx[i], dy[i]);
+		
+		Q.push(x3);
+		Q.push(y3);
+		Q.push(distq+1);
+		//debug("x3,y3,distq_plus_one", xq,yq,distq+1);
+	    }
+	}
+    }
+    return 10000;
+}
+
 int main() {
-    long n = 2e9;
-    long ret=1;
-    for(long i=n; i>0; --i)
-	ret = ret*i;
-    cout << ret << endl;
+    vector<int> dx = {1,1,2,2,-1,-1,-2,-2};
+    vector<int> dy = {2,-2,1,-1,2,-2,1,-1};
+    //debug(dx);
+    //debug(dy);
+    
+    //    cout << knight_dist(0,0,9,9,10,10) << endl;
+    //cout << knight_dist(0,0,0,4,1,5) << endl;
+    cout << knight_dist(0,0,0,4,2,5) << endl;
     
     return 0;
 }

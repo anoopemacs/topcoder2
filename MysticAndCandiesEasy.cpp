@@ -12,34 +12,20 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
-
-class HandsShaking {
+class MysticAndCandiesEasy {
 public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
+    int minBoxes(int C, int X, vector<int> high) {
+	int N = high.size();
+	vector<int> h = high;
+	sort(h.begin(), h.end());
+	int rsum = C;
 
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
-	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
+	int ret = N;
+	for(int i=0; (rsum-h[i])>= X; ++i) {
+	    rsum = rsum-h[i];
+	    --ret;
 	}
-	return dp[n];
+	return ret;
     }
 };
 
@@ -52,11 +38,13 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { 10, 10, {20} }, {1} },
+    { { 10, 7, {3,3,3,3,3} }, {4} },
+    { { 100, 63, {12,34,23,45,34} }, {3} },
+    { { 19, 12, {12,9,15,1,6,4,9,10,10,10,14,14,1,1,12,10,9,2,3,6,1,7,3,4,10,3,14} }, {22} },
+    { { 326, 109, {9,13,6,6,6,16,16,16,10,16,4,3,10,8,11,17,12,5,7,8,7,4,15,7,14,2,2,1,17,1,7,7,12,17,2,9,7,1,8,16,7,4,16,2,13,3,13,1,17,6} }, {15} },
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { , , {}}, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +52,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        int p0;int p1;vector<int> p2;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        int run(MysticAndCandiesEasy* x) {
+            return x->minBoxes(p0,p1,p2);
         }
-        void print() { Tester::printArgs(p0); }
+        void print() { Tester::printArgs(p0,p1,p2); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<MysticAndCandiesEasy>(
+            getTestCases<input, Tester::output<int>>(), disabledTest, 
+            500, 1487684962, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

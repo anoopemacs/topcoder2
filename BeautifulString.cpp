@@ -12,34 +12,25 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
-
-class HandsShaking {
+class BeautifulString {
 public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
-
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
+    int maximumLength(int countAA, int countBB, int maxAA, int maxBB) {
+	long long countA=countAA, countB=countBB, maxA=maxAA, maxB=maxBB;
 	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
+	if(maxA==0 || countA==0) return min(countB, maxB);
+	if(maxB==0 || countB==0) return min(countA, maxA);
+	
+	debug((countB+1)*maxA + countB, (countA+1)*maxB + countA, countA+countB);
+	
+	if((countB+1)*maxA < countA) {
+	    return (countB+1)*maxA + countB;
+	} 
+	
+	if((countA+1)*maxB < countB) {
+	    return (countA+1)*maxB + countA;
 	}
-	return dp[n];
+	
+	return countA+countB;
     }
 };
 
@@ -52,11 +43,13 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { 0, 0, 10, 10 }, {0} },
+    { { 10, 10, 0, 0 }, {0} },
+    { { 3, 5, 1, 1 }, {7} },
+    { { 677578, 502524, 989951, 504698 }, {1180102} },
+    { {387085, 185394, 4184, 336687}, {572479}},
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { , , , }, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +57,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        int p0;int p1;int p2;int p3;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        int run(BeautifulString* x) {
+            return x->maximumLength(p0,p1,p2,p3);
         }
-        void print() { Tester::printArgs(p0); }
+        void print() { Tester::printArgs(p0,p1,p2,p3); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<BeautifulString>(
+            getTestCases<input, Tester::output<int>>(), disabledTest, 
+            500, 1487716894, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #define debug(args...) // Just strip off all debug tokens
 using namespace std;
+typedef long long int64;
 
 // CUT begin
 #undef debug
@@ -11,35 +12,33 @@ template<typename T>inline ostream&operator<<(ostream& os,const vector<T>& v){st
 template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){string delim="[";for (typename set<T>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
+int mymax(int a, int b) {
+    return max(a, b);
+}
 
-vector<long long> dp(60, 0);
-// dp is 1 indexed
-
-class HandsShaking {
-public:
-    void myAux(int n) {
-	if(n%2 != 0) {
-	    dp[n] = 0;
-	    return;
-	}
-	long long topush = 0;
-	for(int i=1; i<=n-1; ++i) {
-	    topush = topush + dp[i-1] * dp[n-i-1];
-	}
-	dp[n] = topush;
-	return;
-    }
-
-    long long countPerfect(int n) {
-	//persons [1, n]
-	dp[0]=1; // sentinel
-	//dp[2] = 1;
-	//dp[4] = 2;
+class SellingProducts {
+ public:
+    int optimalPrice(vector<int> price, vector<int> cost) {
+	//map[price] = profit
+	map<int, int> pp;
+	int maxPrice = accumulate(price.begin(), price.end(), 0, mymax);
 	
-	for(int i=1; i<=n; ++i) {
-	    myAux(i);
+	int maxProfit = INT_MIN;
+	for(int p=0; p<=maxPrice; ++p) {
+	    int runProfit = 0;	
+	    for(int i=0; i<cost.size(); ++i) {
+		if(p <= price[i])
+		    runProfit += max(0, p-cost[i]);
+	    }
+	    pp[p] = runProfit;
+	    maxProfit = max(maxProfit, runProfit);
 	}
-	return dp[n];
+	debug(pp);
+	
+	for(int p=0; p<=maxPrice; ++p) {
+	    if(pp[p] == maxProfit) return p;
+	}
+	return -69; //never reached
     }
 };
 
@@ -52,11 +51,13 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { 2 }, {1LL} },
-    { { 4 }, {2LL} },
-    { { 8 }, {14LL} },
+    { { {13,22,35}, {0,0,0} }, {22} },
+    { { {13,22,35}, {5,15,30} }, {13} },
+    { { {13,22,35}, {15,30,40} }, {0} },
+    { { {10,10,20,20,5}, {1,5,11,15,0} }, {10} },
+    { { {13,17,14,30,19,17,55,16}, {12,1,5,10,3,2,40,19} }, {17} },
     // Your custom test goes here:
-    //{ { }, {} },
+    //{ { {}, {}}, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -64,18 +65,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        int p0;
+        vector<int> p0;vector<int> p1;
 
-        long long run(HandsShaking* x) {
-            return x->countPerfect(p0);
+        int run(SellingProducts* x) {
+            return x->optimalPrice(p0,p1);
         }
-        void print() { Tester::printArgs(p0); }
+        void print() { Tester::printArgs(p0,p1); }
     };
     
     int main() {
-        return Tester::runTests<HandsShaking>(
-            getTestCases<input, Tester::output<long long>>(), disabledTest, 
-            500, 1486399850, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<SellingProducts>(
+            getTestCases<input, Tester::output<int>>(), disabledTest, 
+            500, 1488033553, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end
