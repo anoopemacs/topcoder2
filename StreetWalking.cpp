@@ -16,39 +16,36 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-int myMax(int a, int b) {
-    if(a>b) return a;
-    return b;
-}
+class StreetWalking {
+ public:
+    long long minTime(int X, int Y, int walkTime, int sneakTime) {
+	int64 x=X, y=Y, w=walkTime, s=sneakTime, m=min(s, 2*w);
+	int64 walkOnly = (x+y)*w; // walk only
+	if(s>2*w) return walkOnly;
 
-class Planks {    
-public:
-    
-    int makeSimilar(vector<int> lengths, int costPerCut, int woodValue) {
-	int ret = 0;    
-	int maxLength = accumulate(lengths.begin(), lengths.end(), 0, myMax);
+	//below onwards sneak is prefered to 2walks
 	
-	for(int L=1; L<=maxLength; ++L) {
-	    int moneyAtL = 0;
-	    for(int i=0; i<lengths.size(); ++i) {
-                int l = lengths[i];                 
-
-                if(L==lengths[i]) {
-		    moneyAtL += l*woodValue;
-                } else if (L<lengths[i]) {
-		    
-		    if(woodValue*L - costPerCut > 0) {
-			moneyAtL += (l/L)*(woodValue*L - costPerCut);
-
-			if(l%L == 0) moneyAtL += costPerCut; //reimburse last cut                   
-                    }
-		    
-                }
-            }
-	    ret = max(ret, moneyAtL);
+	//sneakOnly:
+	int64 sneakOnly = LLONG_MAX;
+	bool sneakOnlyPossible = (x%2==0 && y%2==0) || (x%2==1 && y%2==1); //both are even OR both are odd
+	if(sneakOnlyPossible == true) {
+	    sneakOnly = max(x,y) * s;
 	}
 	
-	return ret;
+	//walk and sneak:
+	int64 walkAndSneak = LLONG_MAX;
+	int64 A, B;         
+
+        //path = (0,0) -> (A,B) as sneak; then (A,B) -> (X,Y) as walk   
+        if(w<s) {
+	    A = B = min(x,y);
+	    walkAndSneak = A*s + (max(x,y) - A)*w;
+	} else {
+	    int64 sneak = max(x-1, y-1) * s;
+	    walkAndSneak = sneak+w;
+        }
+        
+	return min(walkAndSneak, sneakOnly);
     }
 };
 
@@ -61,14 +58,15 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { {26,103,59}, 1, 10 }, {1770} },
-    { { {26,103,59}, 10, 10 }, {1680} },
-    { { {26,103,59}, 100, 10 }, {1230} },
-    { { {5281,5297,5303,5309,5323,5333,5347,5351,5381,5387}, 5, 20 }, {1057260} },
-    { { {31,73,127,179,181,191,283,353,359,1019}, 25, 10 }, {25145} },
-    { { {200,200,200,400}, 1000, 1 }, {600} },
+    { { 4, 2, 3, 10 }, {18LL} },
+    { { 4, 2, 3, 5 }, {16LL} },
+    { { 2, 0, 12, 10 }, {20LL} },
+    { { 25, 18, 7, 11 }, {247LL} },
+    { { 24, 16, 12, 10 }, {240LL} },
+    { { 10000000, 50000000, 800, 901 }, {41010000000LL} },
+    { { 135, 122, 43, 29 }, {3929LL} },
     // Your custom test goes here:
-    //{ { {}, , }, {} },
+    //{ { , , , }, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -76,18 +74,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        vector<int> p0;int p1;int p2;
+        int p0;int p1;int p2;int p3;
 
-        int run(Planks* x) {
-            return x->makeSimilar(p0,p1,p2);
+        long long run(StreetWalking* x) {
+            return x->minTime(p0,p1,p2,p3);
         }
-        void print() { Tester::printArgs(p0,p1,p2); }
+        void print() { Tester::printArgs(p0,p1,p2,p3); }
     };
     
     int main() {
-        return Tester::runTests<Planks>(
-            getTestCases<input, Tester::output<int>>(), disabledTest, 
-            500, 1488356951, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<StreetWalking>(
+            getTestCases<input, Tester::output<long long>>(), disabledTest, 
+            500, 1488945146, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

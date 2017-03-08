@@ -16,38 +16,33 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-int myMax(int a, int b) {
-    if(a>b) return a;
-    return b;
+int mymax(int a, int b) {
+    return max(a, b);
 }
 
-class Planks {    
-public:
-    
-    int makeSimilar(vector<int> lengths, int costPerCut, int woodValue) {
-	int ret = 0;    
-	int maxLength = accumulate(lengths.begin(), lengths.end(), 0, myMax);
-	
-	for(int L=1; L<=maxLength; ++L) {
-	    int moneyAtL = 0;
-	    for(int i=0; i<lengths.size(); ++i) {
-                int l = lengths[i];                 
-
-                if(L==lengths[i]) {
-		    moneyAtL += l*woodValue;
-                } else if (L<lengths[i]) {
-		    
-		    if(woodValue*L - costPerCut > 0) {
-			moneyAtL += (l/L)*(woodValue*L - costPerCut);
-
-			if(l%L == 0) moneyAtL += costPerCut; //reimburse last cut                   
-                    }
-		    
-                }
-            }
-	    ret = max(ret, moneyAtL);
+class VoteRigging {
+    int winner(vector<int> votes) {
+	if(votes.size()==1) return votes[0];
+	int ret = INT_MIN;
+	for(int i=1; i<votes.size(); ++i) {
+	    ret = max(ret, votes[i]);
 	}
+	return ret;
+    }
+ public:
+    int minimumVotes(vector<int> votes) {
+	if(votes.size()==1) return 0;
+	int ret = 0;
 	
+	while(votes[0] <= winner(votes)) {
+	    int i=1;
+	    while((votes[i] != winner(votes)) && (i<votes.size())) ++i;
+	    
+	    debug(winner(votes), i, votes[i]);
+	    votes[i] = winner(votes) - 1;
+	    votes[0] = votes[0] + 1;
+	    ++ret;
+	}
 	return ret;
     }
 };
@@ -61,14 +56,12 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { {26,103,59}, 1, 10 }, {1770} },
-    { { {26,103,59}, 10, 10 }, {1680} },
-    { { {26,103,59}, 100, 10 }, {1230} },
-    { { {5281,5297,5303,5309,5323,5333,5347,5351,5381,5387}, 5, 20 }, {1057260} },
-    { { {31,73,127,179,181,191,283,353,359,1019}, 25, 10 }, {25145} },
-    { { {200,200,200,400}, 1000, 1 }, {600} },
+    { { {5,7,7} }, {2} },
+    { { {10,10,10,10} }, {1} },
+    { { {1} }, {0} },
+    { { {5,10,7,3,8} }, {4} },
     // Your custom test goes here:
-    //{ { {}, , }, {} },
+    //{ { {}}, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -76,18 +69,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        vector<int> p0;int p1;int p2;
+        vector<int> p0;
 
-        int run(Planks* x) {
-            return x->makeSimilar(p0,p1,p2);
+        int run(VoteRigging* x) {
+            return x->minimumVotes(p0);
         }
-        void print() { Tester::printArgs(p0,p1,p2); }
+        void print() { Tester::printArgs(p0); }
     };
     
     int main() {
-        return Tester::runTests<Planks>(
+        return Tester::runTests<VoteRigging>(
             getTestCases<input, Tester::output<int>>(), disabledTest, 
-            500, 1488356951, CASE_TIME_OUT, Tester::COMPACT_REPORT
+            500, 1488732483, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

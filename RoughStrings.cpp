@@ -16,39 +16,51 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-int myMax(int a, int b) {
-    if(a>b) return a;
-    return b;
-}
+class RoughStrings {
+    int aux(vector<int> v, int n) {
+        sort(v.begin(), v.end());
+	int ret = v[v.size()-1] - v[0];
 
-class Planks {    
-public:
-    
-    int makeSimilar(vector<int> lengths, int costPerCut, int woodValue) {
-	int ret = 0;    
-	int maxLength = accumulate(lengths.begin(), lengths.end(), 0, myMax);
+	int rmax = v[v.size()-1];
+	int lmin = max(v[0]-n, 1);
+	dump(lmin); dump(rmax);
 	
-	for(int L=1; L<=maxLength; ++L) {
-	    int moneyAtL = 0;
-	    for(int i=0; i<lengths.size(); ++i) {
-                int l = lengths[i];                 
+	for(int l=lmin; l<=rmax; ++l) {
+	    for(int r=l; r<=rmax; ++r) {
+		int run = r-l;
 
-                if(L==lengths[i]) {
-		    moneyAtL += l*woodValue;
-                } else if (L<lengths[i]) {
-		    
-		    if(woodValue*L - costPerCut > 0) {
-			moneyAtL += (l/L)*(woodValue*L - costPerCut);
-
-			if(l%L == 0) moneyAtL += costPerCut; //reimburse last cut                   
-                    }
-		    
-                }
-            }
-	    ret = max(ret, moneyAtL);
+		int cost = 0;
+		for(int i=0; i<v.size(); ++i) {
+		    if(v[i]<l) cost += v[i];
+		    else if(v[i]>r) cost += (v[i]-r);
+		}
+		if(cost<=n) ret = min(ret, run);
+		
+	    }
 	}
 	
 	return ret;
+    }
+    
+ public:
+    int minRoughness(string s, int n) {
+	vector<pair<int, char>> vp;
+	map<char,int> fq;
+	for(int i=0; i<s.length(); ++i) {
+	    fq[s[i]]++;
+	    vp.push_back(make_pair(-1, s[i]));
+	}
+        //debug(fq);
+	vector<int> v;
+	for(map<char, int>::iterator iter = fq.begin(); iter != fq.end(); ++iter) {
+	    //cout << iter->first << "  " << iter->second << endl;
+	    v.push_back(iter->second);
+	}
+
+	//debug(v);
+	//debug(r(s), r2(v));
+	
+	return aux(v, n);
     }
 };
 
@@ -61,14 +73,16 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { {26,103,59}, 1, 10 }, {1770} },
-    { { {26,103,59}, 10, 10 }, {1680} },
-    { { {26,103,59}, 100, 10 }, {1230} },
-    { { {5281,5297,5303,5309,5323,5333,5347,5351,5381,5387}, 5, 20 }, {1057260} },
-    { { {31,73,127,179,181,191,283,353,359,1019}, 25, 10 }, {25145} },
-    { { {200,200,200,400}, 1000, 1 }, {600} },
+    { { "aaaaabbc", 1 }, {3} },
+    { { "aaaabbbbc", 5 }, {0} },
+    { { "veryeviltestcase", 1 }, {2} },
+    { { "gggggggooooooodddddddllllllluuuuuuuccckkk", 5 }, {3} },
+    { { "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", 17 }, {0} },
+    { { "bbbccca", 2 }, {0} },
+    { { "aaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbb", 49 }, {} },
+    { {"jjtvjjjjjjjvjjvjjjvvjjkjvvvvvjj", 5}, {6}},
     // Your custom test goes here:
-    //{ { {}, , }, {} },
+    //{ { , }, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -76,18 +90,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        vector<int> p0;int p1;int p2;
+        string p0;int p1;
 
-        int run(Planks* x) {
-            return x->makeSimilar(p0,p1,p2);
+        int run(RoughStrings* x) {
+            return x->minRoughness(p0,p1);
         }
-        void print() { Tester::printArgs(p0,p1,p2); }
+        void print() { Tester::printArgs(p0,p1); }
     };
     
     int main() {
-        return Tester::runTests<Planks>(
+        return Tester::runTests<RoughStrings>(
             getTestCases<input, Tester::output<int>>(), disabledTest, 
-            500, 1488356951, CASE_TIME_OUT, Tester::COMPACT_REPORT
+            500, 1488811852, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

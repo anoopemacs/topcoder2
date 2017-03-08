@@ -16,38 +16,60 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-int myMax(int a, int b) {
-    if(a>b) return a;
-    return b;
-}
+class IsomorphicWords {
+    bool isomorphicp(string a, string b) {
+	map<char, char> modi;
+	for(int i=0; i<a.length(); ++i) {
 
-class Planks {    
-public:
-    
-    int makeSimilar(vector<int> lengths, int costPerCut, int woodValue) {
-	int ret = 0;    
-	int maxLength = accumulate(lengths.begin(), lengths.end(), 0, myMax);
-	
-	for(int L=1; L<=maxLength; ++L) {
-	    int moneyAtL = 0;
-	    for(int i=0; i<lengths.size(); ++i) {
-                int l = lengths[i];                 
+	    //a letter mapping to 2 different letters
+	    if(modi.find(a[i]) != modi.end()) {
+		map<char, char>::iterator iter = modi.find(a[i]);
+		if(iter->second != b[i]) return false;
+	    }
+	    
+	    modi[a[i]] = b[i];
+	}
 
-                if(L==lengths[i]) {
-		    moneyAtL += l*woodValue;
-                } else if (L<lengths[i]) {
-		    
-		    if(woodValue*L - costPerCut > 0) {
-			moneyAtL += (l/L)*(woodValue*L - costPerCut);
+	//2 different letters mapping to the same letter
+	map<char, bool> done;
+	for(char c='a'; c<='z'; ++c) 
+	    done[c] = false;
 
-			if(l%L == 0) moneyAtL += costPerCut; //reimburse last cut                   
-                    }
-		    
-                }
-            }
-	    ret = max(ret, moneyAtL);
+	for(map<char, char>::iterator it = modi.begin(); it!=modi.end(); ++it) {
+	    //char f = it->first;
+	    char s = it->second;
+
+	    if(done[s] == true) return false;
+	    else {
+		done[s] = true;
+	    }
 	}
 	
+	
+	string expected_b = "";
+	for(int i=0; i<a.length(); ++i) {
+	    expected_b += modi[a[i]];
+        }
+	if(expected_b == b) return true;
+
+	// never reached:
+	return false;
+    }
+ public:
+    int countPairs(vector<string> words) {
+	int Nr = words.size();
+	//int Nc = words[0].length();
+	
+	int ret = 0;
+	for(int f=0; f<Nr; ++f) {
+	    for(int s=f+1; s<Nr; ++s) {
+		string fir = words[f];
+		string sec = words[s];
+		debug(fir, sec);
+		if(isomorphicp(fir, sec)) ++ret;
+	    }
+	}
+
 	return ret;
     }
 };
@@ -61,14 +83,11 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { {26,103,59}, 1, 10 }, {1770} },
-    { { {26,103,59}, 10, 10 }, {1680} },
-    { { {26,103,59}, 100, 10 }, {1230} },
-    { { {5281,5297,5303,5309,5323,5333,5347,5351,5381,5387}, 5, 20 }, {1057260} },
-    { { {31,73,127,179,181,191,283,353,359,1019}, 25, 10 }, {25145} },
-    { { {200,200,200,400}, 1000, 1 }, {600} },
+    { { {"abca","zbxz","opqr"} }, {1} },
+    { { {"aa","ab","bb","cc","cd"} }, {4} },
+    { { {"cacccdaabc","cdcccaddbc","dcdddbccad","bdbbbaddcb","bdbcadbbdc","abaadcbbda","babcdabbac","cacdbaccad","dcddabccad","cacccbaadb","bbcdcbcbdd","bcbadcbbca"} }, {13} },
     // Your custom test goes here:
-    //{ { {}, , }, {} },
+    //{ { {}}, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -76,18 +95,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        vector<int> p0;int p1;int p2;
+        vector<string> p0;
 
-        int run(Planks* x) {
-            return x->makeSimilar(p0,p1,p2);
+        int run(IsomorphicWords* x) {
+            return x->countPairs(p0);
         }
-        void print() { Tester::printArgs(p0,p1,p2); }
+        void print() { Tester::printArgs(p0); }
     };
     
     int main() {
-        return Tester::runTests<Planks>(
+        return Tester::runTests<IsomorphicWords>(
             getTestCases<input, Tester::output<int>>(), disabledTest, 
-            500, 1488356951, CASE_TIME_OUT, Tester::COMPACT_REPORT
+            500, 1488772109, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

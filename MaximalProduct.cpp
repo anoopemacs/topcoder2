@@ -16,39 +16,31 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-int myMax(int a, int b) {
-    if(a>b) return a;
-    return b;
-}
+int64 dp[110][25];
 
-class Planks {    
-public:
-    
-    int makeSimilar(vector<int> lengths, int costPerCut, int woodValue) {
-	int ret = 0;    
-	int maxLength = accumulate(lengths.begin(), lengths.end(), 0, myMax);
-	
-	for(int L=1; L<=maxLength; ++L) {
-	    int moneyAtL = 0;
-	    for(int i=0; i<lengths.size(); ++i) {
-                int l = lengths[i];                 
+class MaximalProduct {
+ public:
+    long long maximalProduct(int S, int K) {
+	memset(dp, 0, sizeof(dp));
 
-                if(L==lengths[i]) {
-		    moneyAtL += l*woodValue;
-                } else if (L<lengths[i]) {
-		    
-		    if(woodValue*L - costPerCut > 0) {
-			moneyAtL += (l/L)*(woodValue*L - costPerCut);
-
-			if(l%L == 0) moneyAtL += costPerCut; //reimburse last cut                   
-                    }
-		    
-                }
-            }
-	    ret = max(ret, moneyAtL);
+	for(int64 s=1; s<=100; ++s) {
+	    dp[s][1] = s;
+	    dp[s][2] = s/2 * (s-s/2);
 	}
-	
-	return ret;
+
+	for(int64 k=3; k<=K; ++k) {
+	    for(int64 s=1; s<=S; ++s) {
+
+		int64 topush = 1;
+		for(int64 a=1; a<=s-k+1; ++a) {
+		    topush = max(topush, a*dp[s-a][k-1]);
+		}
+		dp[s][k] = topush;
+		
+	    }
+	}
+
+	return dp[S][K];
     }
 };
 
@@ -61,14 +53,13 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { {26,103,59}, 1, 10 }, {1770} },
-    { { {26,103,59}, 10, 10 }, {1680} },
-    { { {26,103,59}, 100, 10 }, {1230} },
-    { { {5281,5297,5303,5309,5323,5333,5347,5351,5381,5387}, 5, 20 }, {1057260} },
-    { { {31,73,127,179,181,191,283,353,359,1019}, 25, 10 }, {25145} },
-    { { {200,200,200,400}, 1000, 1 }, {600} },
+    { { 10, 3 }, {36LL} },
+    { { 10, 1 }, {10LL} },
+    { { 10, 10 }, {1LL} },
+    { { 13, 8 }, {32LL} },
+    { { 7, 2 }, {12LL} },
     // Your custom test goes here:
-    //{ { {}, , }, {} },
+    //{ { , }, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -76,18 +67,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        vector<int> p0;int p1;int p2;
+        int p0;int p1;
 
-        int run(Planks* x) {
-            return x->makeSimilar(p0,p1,p2);
+        long long run(MaximalProduct* x) {
+            return x->maximalProduct(p0,p1);
         }
-        void print() { Tester::printArgs(p0,p1,p2); }
+        void print() { Tester::printArgs(p0,p1); }
     };
     
     int main() {
-        return Tester::runTests<Planks>(
-            getTestCases<input, Tester::output<int>>(), disabledTest, 
-            500, 1488356951, CASE_TIME_OUT, Tester::COMPACT_REPORT
+        return Tester::runTests<MaximalProduct>(
+            getTestCases<input, Tester::output<long long>>(), disabledTest, 
+            500, 1488970520, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

@@ -16,38 +16,40 @@ template<typename T>inline ostream&operator<<(ostream& os,const set<T>& v){strin
 template<typename T1,typename T2>inline ostream&operator<<(ostream& os,const map<T1,T2>& v){string delim="[";for (typename map<T1,T2>::const_iterator ii=v.begin();ii!=v.end();++ii){os<<delim<<*ii;delim=", ";}return os<<"]";}
 // CUT end
 
-int myMax(int a, int b) {
-    if(a>b) return a;
-    return b;
+int mymax(int a, int b) {
+    if(b>a) return b;
+    return a;
 }
 
-class Planks {    
+class DNAString {
 public:
-    
-    int makeSimilar(vector<int> lengths, int costPerCut, int woodValue) {
-	int ret = 0;    
-	int maxLength = accumulate(lengths.begin(), lengths.end(), 0, myMax);
-	
-	for(int L=1; L<=maxLength; ++L) {
-	    int moneyAtL = 0;
-	    for(int i=0; i<lengths.size(); ++i) {
-                int l = lengths[i];                 
+    int minChanges(int maxPeriod, vector<string> dna) {
+	string d = "";
+	for(int i=0; i<dna.size(); ++i) d += dna[i];
+	if(maxPeriod == d.size()) return 0;
 
-                if(L==lengths[i]) {
-		    moneyAtL += l*woodValue;
-                } else if (L<lengths[i]) {
-		    
-		    if(woodValue*L - costPerCut > 0) {
-			moneyAtL += (l/L)*(woodValue*L - costPerCut);
-
-			if(l%L == 0) moneyAtL += costPerCut; //reimburse last cut                   
-                    }
-		    
-                }
-            }
-	    ret = max(ret, moneyAtL);
+	int ret = d.size(); // replace all chars
+	for(int p=1; p<=maxPeriod; ++p) {
+	    vector<string> atp;
+	    for(int b=0; b<p; ++b) {
+		string runb = "";
+		for(int r=b; r<d.size(); r=r+p) {
+		    runb = runb + d[r];
+		}
+		atp.push_back(runb);
+	    }
+	    int retp = 0;
+	    for(int i=0; i<atp.size(); ++i) {
+		string s = atp[i];
+		vector<int> ct = vector<int>(s.size(), 0);
+		for(int j=0; j<s.size(); ++j) {
+		    ct[j] = count(s.begin(), s.end(), s[j]);
+		}
+		int maxExisting = accumulate(ct.begin(), ct.end(), 0, mymax);
+		retp = retp + (s.length() - maxExisting);
+	    }
+	    ret = min(retp, ret);
 	}
-	
 	return ret;
     }
 };
@@ -61,14 +63,13 @@ bool disabledTest(int x)
     return x < 0;
 }
 template<class I, class O> vector<pair<I,O>> getTestCases() { return {
-    { { {26,103,59}, 1, 10 }, {1770} },
-    { { {26,103,59}, 10, 10 }, {1680} },
-    { { {26,103,59}, 100, 10 }, {1230} },
-    { { {5281,5297,5303,5309,5323,5333,5347,5351,5381,5387}, 5, 20 }, {1057260} },
-    { { {31,73,127,179,181,191,283,353,359,1019}, 25, 10 }, {25145} },
-    { { {200,200,200,400}, 1000, 1 }, {600} },
+    { { 3, {"ATAGATA"} }, {1} },
+    { { 2, {"ACGTGCA"} }, {3} },
+    { { 13, {"ACGCTGACAGATA"} }, {0} },
+    { { 1, {"AAAATTTCCG"} }, {6} },
+    { { 12, {"ACGTATAGCATGACA","ACAGATATTATG","ACAGATGTAGCAGTA","ACCA","GAC"} }, {20} },
     // Your custom test goes here:
-    //{ { {}, , }, {} },
+    //{ { , {}}, {} },
 };}
 
 //------------------------------------------------------------------------------
@@ -76,18 +77,18 @@ template<class I, class O> vector<pair<I,O>> getTestCases() { return {
     //#define DISABLE_THREADS
     #include "tester.cpp"
     struct input {
-        vector<int> p0;int p1;int p2;
+        int p0;vector<string> p1;
 
-        int run(Planks* x) {
-            return x->makeSimilar(p0,p1,p2);
+        int run(DNAString* x) {
+            return x->minChanges(p0,p1);
         }
-        void print() { Tester::printArgs(p0,p1,p2); }
+        void print() { Tester::printArgs(p0,p1); }
     };
     
     int main() {
-        return Tester::runTests<Planks>(
+        return Tester::runTests<DNAString>(
             getTestCases<input, Tester::output<int>>(), disabledTest, 
-            500, 1488356951, CASE_TIME_OUT, Tester::COMPACT_REPORT
+            500, 1488950659, CASE_TIME_OUT, Tester::COMPACT_REPORT
         );
     }
 // CUT end

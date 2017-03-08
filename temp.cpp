@@ -47,189 +47,146 @@ vector<string> mysplit(string s, char c) {
     return ret;
 }
 
-int maximalSum(vector<int> data) {
-    vector<int> p, n, special;
-    for (int I=0; I<data.size(); ++I) {
-        int dI = data[I];
-        if(dI>1) p.push_back(dI);
-        else if(dI<-1) n.push_back(dI);
-        else special.push_back(dI);
-    }
-    sort(p.begin(), p.end());
-    sort(n.begin(), n.end());
-    debug(n, p, special);
-        
-    int ret = 0;
-
-    int i = p.size() - 1;
-    while (i>0) {
-        ret = ret + p[i]*p[i-1];
-        i = i-2;
-    }
-    if (i == 0) special.push_back(p[i]);
-        
-    int j = n.size() - 1;
-    while (j>0) {
-        ret = ret + n[j]*n[j-1];
-        j = j-2;
-    }
-    if (j == 0) special.push_back(n[j]);
-
-    sort(special.begin(), special.end());   
-        
-    debug(n, p, special);
-        
-    int k = 1;
-    while ((k < special.size()) && (special[k] < 0)) {
-        ret = ret + special[k] * special[k-1];
-        k = k+2;
-    }
-        
-    if(special[k]==0) {
-        ++k;
-    } else {
-        --k;
-    }
-        
-    while (k<special.size()) {
-        ret = ret + special[k];
-        ++k;
-    }
-        
-    return ret;
-}
-
-
-int myval(string s) {
-    int N = s.size();
-    sort(s.begin(), s.end());
-    string::iterator iter = unique(s.begin(), s.end());
-    return N * (int) (iter - s.begin());
-}
-    
-int myval(vector<string> vs) {
-    int ret = 0;
-    for(int i=0; i<vs.size(); ++i) {
-        ret += myval(vs[i]);
-    }
-    return ret;
-}
-    
-
-int dx[8] = {2, 2, -2, -2, 1, 1, -1, -1};
-int dy[8] = {-1, 1, 1, -1, 2, -2, 2, -2};
-
-bool valid(int x, int y, int N, int M) {
-    if(x <= 0 || y <= 0 || x > N || y > M)
-        return false;
-    return true;
-}
-
-int bfs(pair<int, int> p1, pair<int, int> p2, pair<int, int> p3) {
-
-    int N = p3.first;
-    int M = p3.second;
-    queue<pair<pair<int, int>, int> > Que;
-    map<pair<int, int>, bool> Vis;
-
-    Que.push(make_pair(p1, 0));
-
-    while(!Que.empty()) {
-
-        pair<pair<int, int>, int> temp = Que.front();
-        Que.pop();
-
-        if(temp.first.first == p2.first && temp.first.second == p2.second)
-            return temp.second;
-        int x = temp.first.first;
-        int y = temp.first.second;
-        int dis = temp.second + 1;
-
-
-        if(Vis.count(make_pair(x, y)))
-            continue;
-        Vis[make_pair(x, y)] = true;
-
-        for(int i = 0; i < 8; ++i) {
-        
-            int x1 = x + dx[i];
-            int y1 = y + dy[i];
-            if(valid(x1, y1, N, M))
-                Que.push(make_pair(make_pair(x1, y1), dis));
-        }
-        
-    }
-        
-    return -1;
-}
-        
-int solve(int N, int M, int x1, int y1, int x2, int y2) {
-        
-    pair<int, int> p1;
-    p1.first = x1;
-    p1.second = y1;
-        
-    pair<int, int> p2;
-    p2.first = x2;
-    p2.second = y2;
-        
-    pair<int, int> p3;
-    p3.first = N;
-    p3.second = M;
-        
-    int ans = bfs(p1, p2, p3);
-    return ans;
-}
-
-    
-int knight_dist(int x1, int y1, int x2, int y2, int Nr, int Nc) {
-        
-    queue<int> Q;
-    Q.push(x1);
-    Q.push(y1);
-    Q.push(0);
-        
-    int solved[10][10];
-    memset(solved, 0, sizeof(solved));
-        
-    while(!Q.empty()) {
-	int xq = Q.front(); Q.pop();
-	int yq = Q.front(); Q.pop();
-	int distq = Q.front(); Q.pop();
-	
-	//cout << endl;   
-	//debug("x1,y1,distq", xq,yq,distq);
-	
-	if(xq==x2 && yq==y2)
-	    return distq;
-	solved[xq][yq] = 1;     
-    
-        for(int i=0; i<8; ++i) {
-	    int x3 = xq+dx[i];
-	    int y3 = yq+dy[i];
-	    
-	    if(x3>=0 && x3<Nr && y3>=0 && y3<Nc && solved[x3][y3] == 0) {
-	        //debug(x3,y3,"*******", "i=", i, "d[]", dx[i], dy[i]);
-		
-		Q.push(x3);
-		Q.push(y3);
-		Q.push(distq+1);
-		//debug("x3,y3,distq_plus_one", xq,yq,distq+1);
-	    }
-	}
-    }
-    return 10000;
-}
-
+#define M 32
 int main() {
-    vector<int> dx = {1,1,2,2,-1,-1,-2,-2};
-    vector<int> dy = {2,-2,1,-1,2,-2,1,-1};
-    //debug(dx);
-    //debug(dy);
+    // http://www.geeksforgeeks.org/c-bitset-and-its-application/
+    bitset<M> bset1;
+    bitset<M> bset2(-1);
+    bitset<M> bset3(string("10"));
+    debug(bset1, bset2, bset3);
     
-    //    cout << knight_dist(0,0,9,9,10,10) << endl;
-    //cout << knight_dist(0,0,0,4,1,5) << endl;
-    cout << knight_dist(0,0,0,4,2,5) << endl;
+    bitset<8> set8;
+    debug(set8);
+    debug(~set8);
+    set8[1] = 1;
+    set8[3] = 1;
+    debug(set8);    
+    
+    int numberOf1 = set8.count();
+    int numberOf0 = set8.size() - numberOf1;
+    debug(numberOf1, numberOf0);
+    for (int i=0; i<set8.size(); ++i)
+        cout << set8.test(i) << endl;
+    if(set8.any())
+        cout << "set8 has some bit set" << endl;
+    if(!bset1.any())
+        cout << "bset1 has no bit set" << endl;
+    if(!bset2.none())
+        cout << "bset2 has all bits set" << endl;
+    debug(set8.set());
+    debug(set8.reset()); //destructive
+    debug(set8.flip()); //destructive
+    debug(set8.flip(1));
+    
+    //int num = 69;
+    int num = -1;
+    //long long num = -1;
+    cout << num << " in binary = " << bitset<32>(num) << endl;
+    
+    int arr[99];
+    memset(arr, 0, sizeof(arr));
+    
+    cout << (string("001") == "001") << endl;
+    bitset<128> test128;
+    test128.flip();
+    cout << test128 << endl;
+    
+    bitset<8> b8;
+    b8 = 1<<7;
+    cout << b8 << endl;
+    
+    //bmerry: fun with bits
+    cout << "bmerry fun with bits starts here" << endl;
+    bitset<8> A(string("1010"));
+    bitset<8> B(string("1100"));
+    bitset<8> allbits("00001111"); // not 11111111 because for negation below to work
+    
+    debug("A=", A, " B=", B);
+    debug("union:", A|B);
+    debug("intersec:", A&B);
+    debug("subtraction:", A&(~B));
+    debug("negation:", allbits^A);
+    A[2]=1;
+    debug("set 2nd bit", A);
+    
+    bitset<32> n(16); // build n using the integer value = 16's bit representation
+    debug("12345678123456781234567812345678");
+    debug(n, "=n");
+    int clz = __builtin_clz(16), ctz = __builtin_ctz(16), ones = __builtin_popcount(16);
+    debug(clz, ctz, ones);
+    debug(__builtin_ctz(0));
+
+    cout << (1<<31) << "   " << bitset<32>(1<<31) << "  " << INT_MIN << endl;
+    return 0;
+    
+    for(int i=0; i<20; ++i) {
+        bitset<32> bi(i);
+        int lowest_set_bit = (i & ~(i-1));
+        cout << bi << "   " <<  bitset<32>(lowest_set_bit) << endl;
+    }
+    cout << endl;
+    
+    bitset<32> trivia = 1<<20;
+    debug("trivia:", trivia);
+    
+    stringstream ss;
+    ss << 0xaaaaaaaa;
+    long i;
+    ss >> i;
+    cout << i << endl;
+    
+    //not so useful trick: reverse bits
+    int x = 2;
+    bitset<32>xbit(x);
+    cout << xbit << endl;
+    x = ((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1);
+    x = ((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2);
+    x = ((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4);
+    x = ((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8);
+    x = ((x & 0xffff0000) >> 16) | ((x & 0x0000ffff) << 16);
+    cout << bitset<32>(x) << endl;
+    
+    //subsets start
+    //[0, N-1], k-element subsets
+    //[0, 7], 3-element subsets
+    int wht[8] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    for (int i=0; i<8; ++i)
+        printf("%c ", wht[i]);
+    cout << endl;
+    
+    int k = 3;
+    int N = 8;
+    
+    int s = (1<<k) - 1;
+    while(!(s & (1<<N))) {
+        int lo = s & ~(s-1); // lowest one
+        int lz = (s+lo) & (~s); // lowest zero after lo
+        cout << bitset<8>(s) << "  " << bitset<8>(lo) << "  " << bitset<8>(lz) << endl;
+        s = s | lz; // add lz to set
+        s = s & ~(lz-1); // reset bits below lz
+        int appropriate_number_of_ones = (lz/lo/2 - 1);
+        s = s | appropriate_number_of_ones;
+    }
     
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
